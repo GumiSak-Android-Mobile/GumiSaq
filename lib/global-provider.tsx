@@ -1,5 +1,4 @@
 import React, { createContext, ReactNode, useContext } from "react";
-
 import { getCurrentUser } from "./appwrite";
 import { useAppwrite } from "./useAppwrite";
 
@@ -15,6 +14,7 @@ interface User {
   name: string;
   email: string;
   avatar: string;
+  userType: 'user' | 'admin';
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
