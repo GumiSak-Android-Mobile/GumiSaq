@@ -1,12 +1,12 @@
-import React from "react";
-import { Text, View } from "react-native";
+import React from 'react'
+import { Text, View } from 'react-native'
 
-const Explore = () => {
-	return (
-		<View>
-			<Text>Explore</Text>
-		</View>
-	);
-};
+const Notification = () => {
+  return (
+    <View>
+      <Text>Notification</Text>
+    </View>
+  )
+}
 
-export default Explore;
+export default Notification

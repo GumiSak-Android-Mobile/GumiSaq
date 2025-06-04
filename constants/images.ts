@@ -1,17 +1,12 @@
-import icon1 from "@/assets/images/icon.png";
+import baju from "@/assets/images/baju.png";
+import logoawal from "@/assets/images/logoawal.png";
+import whiteGradient from "@/assets/images/white-gradient.png";
+import cardgradient from "@/assets/images/card-gradient.png";
+
 
 export default {
-	icon1,
-	// 	home,
-	// 	person,
-	// 	search,
-	// 	rightArrow,
-	// 	logout,
-	// 	edit,
-	// 	bell,
-	// 	fillter,
-	// 	star,
-	// 	heart,
-	// 	page1,
-	// 	profile,
+  whiteGradient,
+  logoawal,
+  baju,
+  cardgradient,
 };
