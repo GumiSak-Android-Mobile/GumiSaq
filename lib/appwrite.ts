@@ -126,7 +126,7 @@ export async function loginUser(email: string, password: string) {
 export async function loginadmin(email: string, password: string) {
   try {
     console.log("Mencoba login admin gizi dengan email:", email);
-    
+
     const admins = await databases.listDocuments(
       config.databaseId!,
       config.ahligiziCollectionId!,
