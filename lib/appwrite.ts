@@ -8,7 +8,7 @@ import {
 } from "react-native-appwrite";
 
 export const config = {
-  platform: "com.unram.gumisaq",
+  platform: "com.saqcloth.gumisaq",
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
