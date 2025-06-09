@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const ProfileScreen = () => {
   const [name, setName] = useState("Saufi Azuddin");
   const [email, setEmail] = useState("sauficapekpkl99@gmail.com");
-  const [alamat, setAlamat] = useState("Jl. Abdul");
+  const [alamat, setAlamat] = useState("Jl. Mana Sudah");
   const [noHp, setNoHp] = useState("081234567890");
   const [password, setPassword] = useState("*******");
 
