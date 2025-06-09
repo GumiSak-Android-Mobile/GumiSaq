@@ -1,10 +1,10 @@
 import { Artikel } from "@/components/Berita";
+import DetailArtikel from "@/components/DetailArtikel";
 import Search from "@/components/Search";
 import { Article } from "@/constants/article";
 import { useArticles } from "@/constants/useArticles";
-
 import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
 	FlatList,
@@ -15,51 +15,61 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const categories = ["All", "Hiburan", "Benda", "Tradisi", "Adat"];
+const categories = ["Semua", "Hiburan", "Benda", "Tradisi", "Adat"];
 
 const ArtikelScreen = () => {
-	const { articles, loading, error, searchArticles, filteredArticles } =
-		useArticles();
+	const {
+		articles,
+		loading,
+		error,
+		searchArticles,
+		searchBerita,
+		filteredArticles,
+	} = useArticles();
 	const [selectedCategory, setSelectedCategory] = useState("Semua");
+	const [selectedArticleId, setSelectedArticleId] = useState<string | null>(
+		null
+	);
 	const params = useLocalSearchParams<{ query?: string }>();
 
 	// Handle search from URL params
 	useEffect(() => {
 		if (params.query) {
-			searchArticles(params.query);
+			searchBerita(params.query);
 		}
 	}, [params.query]);
 
 	// Handle category filtering
 	useEffect(() => {
-		if (!params.query) {
-			if (selectedCategory === "Semua") {
-				searchArticles(""); // Reset to show all articles
-			} else {
-				const filtered = articles.filter(
-					(article) => article.category === selectedCategory
-				);
-				searchArticles(selectedCategory);
-			}
+		if (selectedCategory === "Semua") {
+			searchArticles(""); // Reset to show all articles
+		} else {
+			searchArticles(selectedCategory);
 		}
 	}, [selectedCategory]);
 
 	const handleArticlePress = (article: Article) => {
-		router.push({
-			pathname: `./detail/${article.$id}`,
-			params: { id: article.$id },
-		});
+		setSelectedArticleId(article.$id); // Set id artikel yang dipilih
 	};
+
+	const handleBackToList = () => {
+		setSelectedArticleId(null); // Kembali ke daftar artikel
+	};
+
+	// Jika ada artikel yang dipilih, tampilkan detail (tombol back hanya di detail)
+	if (selectedArticleId) {
+		return <DetailArtikel id={selectedArticleId} onBack={handleBackToList} />;
+	}
 
 	return (
 		<SafeAreaView className="bg-primary-500 h-full p-4">
 			{/* Header */}
 			<View className="flex-row items-center">
-				<TouchableOpacity onPress={() => router.back()}>
+				<TouchableOpacity onPress={handleBackToList}>
 					<Ionicons name="arrow-back" size={24} color="white" />
 				</TouchableOpacity>
 				<Text className="text-white text-xl font-bold ml-4">ARTIKEL GIZI</Text>
-				<TouchableOpacity onPress={() => router.back()} className="ml-auto">
+				<TouchableOpacity onPress={handleBackToList} className="ml-auto">
 					<Text className="text-3xl text-white mr-4">×</Text>
 				</TouchableOpacity>
 			</View>

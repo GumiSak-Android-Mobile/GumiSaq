@@ -4,9 +4,13 @@ export interface Article {
 	$updatedAt: string;
 	title: string;
 	description: string;
+	description2?: string;
+	description3?: string;
 	content: string;
 	image: string;
-	category: "Hiburan" | "Benda" | "Tradisi" | "Adat";
+	image2?: string;
+	image3?: string;
+	category: "Semua" | "Hiburan" | "Benda" | "Tradisi" | "Adat";
 	author: string;
 	tags: string[];
 	isPublished: boolean;
