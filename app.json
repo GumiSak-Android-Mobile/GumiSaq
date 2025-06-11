@@ -4,7 +4,7 @@
     "slug": "GumisaQ",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/baju.png",
+    "icon": "./assets/images/logoawal.jpg",
     "scheme": "gumisaq",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/baju.png",
+        "foregroundImage": "./assets/images/logoawal.jpg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -21,14 +21,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/baju.png"
+      "favicon": "./assets/images/logoawal.jpg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/baju.png",
+          "image": "./assets/images/logoawal.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

@@ -25,9 +25,9 @@ export default function Index() {
           <View className="px-5">
           <View className="flex flex-row items-center justify-between mt-5">
               <View className="flex flex-row items-center">
-                <Image source={images.baju} className="size-12 relative rounded-full"/>
+                <Image source={images.logoawal} className="size-12 relative rounded-full bg-black"/>
                 <View className="flex flex-col items-start ml-2 justify-center">
-                    <Text className="text-xs font-rubik text-black-100">hamsnida</Text>
+                    <Text className="text-xs font-rubik text-black-100">GumiSaq</Text>
                     <Text className="text-base font-rubik-medium text-black-300">Q</Text>
                 </View>
               </View>

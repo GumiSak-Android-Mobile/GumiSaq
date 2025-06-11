@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, Image} from 'react-native'
-import React from 'react'
-import images from '@/constants/images'
 import icons from '@/constants/icons'
+import images from '@/constants/images'
+import React from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 interface Props{
   onPress?: () => void
