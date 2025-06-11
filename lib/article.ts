@@ -1,4 +1,4 @@
-import { config, databases } from "./client";
+import { config, databases } from "./appwrite";
 
 export async function getArticleById(id: string) {
 	try {
