@@ -62,7 +62,7 @@ const ArtikelScreen = () => {
 	}
 
 	return (
-		<SafeAreaView className="bg-primary-500 h-full p-4">
+		<SafeAreaView className="bg-primary-100 h-full p-4">
 			{/* Header */}
 			<View className="flex-row items-center">
 				<TouchableOpacity onPress={handleBackToList}>
@@ -89,7 +89,7 @@ const ArtikelScreen = () => {
 					<TouchableOpacity
 						key={index}
 						onPress={() => setSelectedCategory(category)}
-						className={`flex flex-col items-start mr-4 px-4 py- rounded-full h-6 mb-3 ${
+						className={`flex flex-col items-start mr-4 px-4 rounded-full h-6 mb-3 ${
 							selectedCategory === category ? "bg-white" : "bg-primary-400"
 						}`}
 					>
@@ -129,7 +129,7 @@ const ArtikelScreen = () => {
 					columnWrapperClassName="flex gap-5 px-5"
 					contentContainerClassName="pb-32"
 					showsHorizontalScrollIndicator={false}
-					className="bg-primary-400 mt-4"
+					className="bg-primary-100 mt-4"
 				/>
 			)}
 		</SafeAreaView>

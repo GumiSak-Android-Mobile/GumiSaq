@@ -66,7 +66,7 @@ const DetailArtikel = ({ id, onBack }: { id: string; onBack?: () => void }) => {
 
 	if (loading) {
 		return (
-			<View className="flex-1 items-center justify-center bg-[#5B6846]">
+			<View className="flex-1 items-center justify-center bg-primary-100">
 				<ActivityIndicator size="large" color="#fff" />
 			</View>
 		);
@@ -74,7 +74,7 @@ const DetailArtikel = ({ id, onBack }: { id: string; onBack?: () => void }) => {
 
 	if (!data) {
 		return (
-			<View className="flex-1 items-center justify-center bg-[#5B6846]">
+			<View className="flex-1 items-center justify-center bg-primary-100">
 				<Text className="text-white">Data tidak ditemukan.</Text>
 			</View>
 		);
@@ -90,7 +90,7 @@ const DetailArtikel = ({ id, onBack }: { id: string; onBack?: () => void }) => {
 			: "";
 
 	return (
-		<View className="flex-1 bg-[#5B6846]">
+		<View className="flex-1 bg-primary-100">
 			<StatusBar barStyle="light-content" />
 
 			{/* Background Gambar + Overlay */}
@@ -106,7 +106,7 @@ const DetailArtikel = ({ id, onBack }: { id: string; onBack?: () => void }) => {
 						StyleSheet.absoluteFill,
 						{
 							opacity: overlayOpacity,
-							backgroundColor: "#222",
+							backgroundColor: "#222", // Tetap hitam untuk overlay, tidak ada padanan langsung di tailwind.config
 							borderBottomLeftRadius: 32,
 							borderBottomRightRadius: 32,
 						},
@@ -148,7 +148,7 @@ const DetailArtikel = ({ id, onBack }: { id: string; onBack?: () => void }) => {
 						<Ionicons
 							name={liked ? "heart" : "heart-outline"}
 							size={28}
-							color={liked ? "#e53935" : "#fff"}
+							color={liked ? "#e53935" : "#fff"} // Warna merah untuk hati tetap eksplisit karena tidak ada di tailwind.config
 						/>
 					</Animated.View>
 				</TouchableOpacity>
