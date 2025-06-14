@@ -62,7 +62,7 @@ export default function SignIn() {
           {/* Logo */}
           <View className="items-center mb-8">
             <Image
-              source={images.baju}
+              source={images.logoawal}
               className="w-[250px] h-[250px]"
               resizeMode="contain"
             />

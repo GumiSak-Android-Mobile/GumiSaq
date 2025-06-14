@@ -20,6 +20,7 @@ export const config = {
   adminChatCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ADMIN_CHAT_COLLECTION_ID,
   propertiesCollectionId:
   process.env.EXPO_PUBLIC_APPWRITE_PROPERTIES_COLLECTION_ID,
+  storageBucketId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || 'default',
 };
 
 export const client = new Client();
