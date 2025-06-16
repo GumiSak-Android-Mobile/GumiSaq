@@ -55,6 +55,7 @@ const SettingsItem = ({
 const Profile = () => {
   const { user, refetch } = useGlobalContext();
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [avatarError, setAvatarError] = useState(false); // To track avatar load errors
   const initialLinesToShow = 5;
 
   const handleLogout = async () => {
@@ -102,14 +103,17 @@ const Profile = () => {
           })
         };
 
+        // Upload to Appwrite Storage
         const uploadedFile = await storage.createFile(
           config.storageBucketId,
           'unique()',
           file
         );
 
+        // Get file URL (add timestamp to avoid caching)
         const fileUrl = storage.getFileView(config.storageBucketId, uploadedFile.$id);
-        console.log('Generated avatar URL:', fileUrl.href);
+        const fileUrlWithTimestamp = `${fileUrl.href}?${Date.now()}`; // Force refresh to avoid caching
+        console.log('Generated avatar URL:', fileUrlWithTimestamp);
 
         try {
           console.log('Updating user profile:', user!.$id);
@@ -117,15 +121,17 @@ const Profile = () => {
             config.databaseId!,
             config.usersProfileCollectionId!,
             user!.$id,
-            { avatar: fileUrl.href }
+            { avatar: fileUrlWithTimestamp }
           );
           console.log('User profile updated:', updated);
 
+          // Refresh user data
           console.log('Refreshing user data...');
           await refetch();
           console.log('User data refreshed');
         } catch (updateError) {
           console.error('Error updating profile:', updateError);
+          Alert.alert("Error", "Failed to update profile. Please try again.");
           throw updateError;
         }
 
@@ -135,6 +141,10 @@ const Profile = () => {
       console.error('Error updating profile picture:', error);
       Alert.alert("Error", "Failed to update profile picture. Please try again.");
     }
+  };
+
+  const handleAvatarError = () => {
+    setAvatarError(true); // Set avatarError to true if image fails to load
   };
 
   return (
@@ -150,9 +160,14 @@ const Profile = () => {
 
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
+            {/* Use a fallback image if avatar is not available or fails to load */}
             <Image
-              source={{ uri: user?.avatar || 'https://via.placeholder.com/150' }}
-              onError={() => console.error('Failed to load profile image')}
+              source={{
+                uri: avatarError || !user?.avatar
+                  ? 'https://via.placeholder.com/150'
+                  : `${user.avatar}?${Date.now()}`,
+              }}
+              onError={handleAvatarError} // Trigger error handler on load failure
               className="size-44 relative rounded-full"
             />
             <TouchableOpacity onPress={handleImagePick} className="absolute bottom-11 right-2">
