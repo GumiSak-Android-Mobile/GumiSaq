@@ -1,83 +1,161 @@
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { ActivityIndicator, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { ResizeMode, Video } from 'expo-av';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+import { config, databases, storage } from '../../../lib/appwrite';
 
 const { width, height } = Dimensions.get('window');
 
-export default function VideoFromQRScreen() {
+export default function VideoDetailScreen() {
   const { id } = useLocalSearchParams();
-  const decodedUrl = decodeURIComponent(id as string);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const videoRef = useRef<Video>(null);
+  const [isReady, setIsReady] = useState(false);
 
-  const isValidUrl = decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://');
+  useEffect(() => {
+    if (typeof id === 'string') {
+      fetchVideoDetails(id);
+    } else {
+      setLoading(false);
+      setError('ID video dari QR Code tidak valid.');
+    }
+  }, [id]);
 
+  const fetchVideoDetails = async (videoId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const videoDocument = await databases.getDocument(
+        config.databaseId!,
+        config.collectionId!,
+        videoId
+      );
+
+      const fileId = videoDocument.fileId;
+
+      if (!fileId) {
+        throw new Error('Atribut "fileId" tidak ditemukan dalam dokumen.');
+      }
+
+      const filePreviewUrl = storage.getFileView(config.storageBucketId!, fileId);
+      setVideoUrl(filePreviewUrl.href);
+    } catch (err: any) {
+      console.error('Gagal mengambil detail video:', err);
+      setError('Gagal memuat video: ' + err.message);
+      Alert.alert('Terjadi Kesalahan', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isReady && videoRef.current) {
+      (async () => {
+        try {
+          await videoRef.current!.playAsync();
+          await videoRef.current!.presentFullscreenPlayer();
+        } catch (e) {
+          console.error('Gagal memutar atau fullscreen:', e);
+        }
+      })();
+    }
+  }, [isReady]);
+
+  if (loading) {
+    return (
+      <View style={styles.fullscreenContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Memuat video...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.fullscreenContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <View style={styles.backButtonContainer}>
+          <Text onPress={() => router.back()} style={styles.backButton}>
+            Kembali ke Scanner
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  console.log(videoUrl);
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Tonton Video' }} />
-      <Text style={styles.title}>Video dari QR Code</Text>
-
-      {isValidUrl ? (
-        <WebView
-          source={{ uri: decodedUrl }}
-          style={styles.webview}
-          allowsFullscreenVideo
-          javaScriptEnabled
-          domStorageEnabled
-          startInLoadingState
-          renderLoading={() => (
-            <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-          )}
+    <View style={styles.fullscreenContainer}>
+      <Stack.Screen options={{ title: 'Memutar Video', headerShown: false }} />
+      {videoUrl ? (
+        <Video
+          ref={videoRef}
+          style={styles.fullscreenVideo}
+          source={{ uri: videoUrl.replace(/^.*?(?=https:\/\/fra\.cloud\.appwrite\.io)/, '') }}
+          resizeMode={ResizeMode.CONTAIN}
+          shouldPlay={false}
+          useNativeControls
+          isLooping
+          onReadyForDisplay={() => setIsReady(true)}
+          onError={(error) => {
+          console.error("Video error:", error);
+        }}
         />
       ) : (
-        <Text style={styles.errorText}>QR Code tidak berisi URL yang valid.</Text>
+        <Text style={styles.noVideoText}>Tidak ada URL video ditemukan.</Text>
       )}
-
-      <Pressable onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Pindai QR Code Lain</Text>
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  fullscreenContainer: {
     flex: 1,
-    paddingTop: 40,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'black',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  webview: {
-    width: width * 0.95,
-    height: height * 0.6,
+  fullscreenVideo: {
+    width: width,
+    height: height,
     backgroundColor: 'black',
-    borderRadius: 10,
-    overflow: 'hidden',
   },
-  loader: {
-    marginTop: 20,
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#ccc',
   },
   errorText: {
-    fontSize: 16,
     color: 'red',
-    marginTop: 20,
+    fontSize: 16,
     textAlign: 'center',
+    marginBottom: 10,
   },
-  backButton: {
+  backButtonContainer: {
     marginTop: 30,
     backgroundColor: '#28a745',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
   },
-  backButtonText: {
+  backButton: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  noVideoText: {
+    fontSize: 18,
+    color: '#999',
+    textAlign: 'center',
   },
 });

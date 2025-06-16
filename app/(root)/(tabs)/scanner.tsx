@@ -3,7 +3,7 @@ import { Link, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Dimensions, StyleSheet, Text, View } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -26,7 +26,7 @@ export default function ScannerScreen() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center', marginBottom: 20 }}>
-          Kami memerlukan izin kamera Anda untuk menampilkan pemindai QR-Code.
+          Kami memerlukan izin kamera untuk memindai QR Code.
         </Text>
         <Button onPress={requestPermission} title="Berikan Izin Kamera" />
       </View>
@@ -38,9 +38,7 @@ export default function ScannerScreen() {
       setScanned(true);
       console.log(`QR Code scanned: type ${type}, data ${data}`);
 
-      // Anggap QR Code berisi URL video, lalu encode agar aman di URL
-      const encodedUrl = encodeURIComponent(data);
-      router.push(`/scanner/${encodedUrl}`);
+      router.push(`/scanner/${data}`);
     }
   };
 
@@ -61,7 +59,7 @@ export default function ScannerScreen() {
         )}
       </View>
       <Text style={styles.instructionText}>
-        Arahkan kamera ke QR Code yang berisi link video YouTube.
+        Arahkan kamera ke QR Code yang berisi ID video Appwrite.
       </Text>
       <Link href="/" style={styles.backButton}>
         <Text style={styles.backButtonText}>Kembali ke Home</Text>
