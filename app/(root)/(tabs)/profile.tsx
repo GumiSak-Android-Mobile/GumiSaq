@@ -55,7 +55,6 @@ const SettingsItem = ({
 const Profile = () => {
   const { user, refetch } = useGlobalContext();
   const [isTextExpanded, setIsTextExpanded] = useState(false);
-  const [avatarError, setAvatarError] = useState(false);
   const initialLinesToShow = 5;
 
   const handleLogout = async () => {
@@ -76,7 +75,7 @@ const Profile = () => {
   const handleImagePick = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+      
       if (status !== 'granted') {
         Alert.alert("Permission Required", "You need to grant access to your photos to change profile picture.");
         return;
@@ -92,75 +91,50 @@ const Profile = () => {
       if (!result.canceled) {
         Alert.alert("Uploading...", "Please wait while we update your profile picture.");
 
-        const response = await fetch(result.assets[0].uri);
-        const blob = await response.blob();
-        const fileSize = blob.size;
-
         const file = {
           name: `avatar-${user?.$id}-${Date.now()}.jpg`,
           type: 'image/jpeg',
           uri: result.assets[0].uri,
-          size: fileSize,
+          size: await new Promise<number>((resolve) => {
+            fetch(result.assets[0].uri)
+              .then((response) => response.blob())
+              .then((blob) => resolve(blob.size))
+          })
         };
 
-        let uploadedFile;
-        try {
-          if (!config.storageBucketId) {
-            throw new Error("Appwrite Storage Bucket ID is not configured.");
-          }
-          uploadedFile = await storage.createFile(
-            config.storageBucketId,
-            'unique()',
-            file
-          );
-          console.log('File uploaded to Appwrite Storage:', uploadedFile);
-        } catch (uploadError: any) {
-          console.error('Error uploading file to Appwrite storage:', JSON.stringify(uploadError, null, 2));
-          Alert.alert("Error", `Failed to upload profile picture: ${uploadError.message || "Unknown error"}. Please check Appwrite bucket configuration and permissions.`);
-          return;
-        }
+        const uploadedFile = await storage.createFile(
+          config.storageBucketId,
+          'unique()',
+          file
+        );
 
-        // --- PERBAIKAN DI SINI ---
-        const baseUrl = storage.getFileView(config.storageBucketId, uploadedFile.$id).href;
-        // Cek apakah URL sudah memiliki parameter query (ada tanda '?')
-        const separator = baseUrl.includes('?') ? '&' : '?';
-        const fileUrlWithTimestamp = `${baseUrl}${separator}t=${Date.now()}`; // Gunakan 't' sebagai nama parameter timestamp
-
-        console.log('Generated avatar URL for update:', fileUrlWithTimestamp);
+        const fileUrl = storage.getFileView(config.storageBucketId, uploadedFile.$id);
+        console.log('Generated avatar URL:', fileUrl.href);
 
         try {
-          console.log('Attempting to update user profile document with new avatar URL for user ID:', user?.$id);
-          if (!config.databaseId || !config.usersProfileCollectionId) {
-            throw new Error("Appwrite Database ID or Users Profile Collection ID is not configured.");
-          }
+          console.log('Updating user profile:', user!.$id);
           const updated = await databases.updateDocument(
-            config.databaseId,
-            config.usersProfileCollectionId,
+            config.databaseId!,
+            config.usersProfileCollectionId!,
             user!.$id,
-            { avatar: fileUrlWithTimestamp }
+            { avatar: fileUrl.href }
           );
-          console.log('User profile document updated successfully:', updated);
+          console.log('User profile updated:', updated);
 
-          console.log('Refreshing global user data...');
+          console.log('Refreshing user data...');
           await refetch();
-          console.log('Global user data refreshed.');
-
-          Alert.alert("Success", "Profile picture updated successfully!");
-          setAvatarError(false);
-        } catch (updateError: any) {
-          console.error('Error updating user profile document:', JSON.stringify(updateError, null, 2));
-          Alert.alert("Error", `Failed to update profile in database: ${updateError.message || "Unknown error"}. Please check Appwrite collection permissions and your user ID.`);
+          console.log('User data refreshed');
+        } catch (updateError) {
+          console.error('Error updating profile:', updateError);
+          throw updateError;
         }
-      }
-    } catch (error: any) {
-      console.error('An unexpected error occurred during image pick process:', JSON.stringify(error, null, 2));
-      Alert.alert("Error", `An unexpected error occurred: ${error.message || "Unknown error"}. Please try again.`);
-    }
-  };
 
-  const handleAvatarError = () => {
-    setAvatarError(true);
-    console.error('Failed to load user avatar. Displaying placeholder.');
+        Alert.alert("Success", "Profile picture updated successfully!");
+      }
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      Alert.alert("Error", "Failed to update profile picture. Please try again.");
+    }
   };
 
   return (
@@ -177,12 +151,8 @@ const Profile = () => {
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
             <Image
-              source={{
-                uri: avatarError || !user?.avatar
-                  ? 'https://via.placeholder.com/150'
-                  : `${user.avatar.split('?')[0]}?${user.avatar.split('?')[1] || ''}&t=${Date.now()}`, // Perbaiki cara timestamp ditambahkan pada tampilan juga
-              }}
-              onError={handleAvatarError}
+              source={{ uri: user?.avatar || 'https://via.placeholder.com/150' }}
+              onError={() => console.error('Failed to load profile image')}
               className="size-44 relative rounded-full"
             />
             <TouchableOpacity onPress={handleImagePick} className="absolute bottom-11 right-2">

@@ -1,5 +1,7 @@
-import { createContext, ReactNode, useContext, useState, useEffect } from "react";
+
+import React, { createContext, ReactNode, useContext } from "react";
 import { getCurrentUser } from "./appwrite";
+import { useAppwrite } from "./useAppwrite";
 
 interface GlobalContextType {
   isLogged: boolean;
@@ -13,6 +15,7 @@ interface User {
   name: string;
   email: string;
   avatar: string;
+  userType: 'user' | 'admin';
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -22,25 +25,13 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const refetch = async () => {
-    setLoading(true);
-    try {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-    } catch (err) {
-      setError("Failed to fetch user data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refetch(); // Automatically fetch user when the provider is mounted
-  }, []);
+  const {
+    data: user,
+    loading,
+    refetch,
+  } = useAppwrite({
+    fn: getCurrentUser,
+  });
 
   const isLogged = !!user;
 
