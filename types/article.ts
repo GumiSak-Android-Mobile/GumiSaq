@@ -11,7 +11,7 @@ export interface Article extends Models.Document {
   description: string;
   image: string; // Diubah dari imageUrl
   content: string;
-  category: 'hipertensi' | 'diabetes' | 'kanker' | 'nutrisi' | 'diet' | 'kesehatan';
+  category: 'Hiburan' | 'Benda' | 'Tradisi' | 'Adat' ;
   author: string;
   tags: string[];
   isPublished: boolean;

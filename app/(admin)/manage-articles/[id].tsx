@@ -38,7 +38,7 @@ const EditArticleScreen = () => {
     title: '',
     description: '',
     content: '',
-    category: 'nutrisi',
+    category: 'Hiburan',
     tags: '',
     isPublished: true,
   });
@@ -48,7 +48,7 @@ const EditArticleScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const categories: ArticleCategory[] = ['nutrisi', 'diet', 'kesehatan', 'hipertensi', 'diabetes', 'kanker'];
+  const categories: ArticleCategory[] = ['Hiburan' , 'Benda' , 'Tradisi' , 'Adat' ];
 
   // Mengambil data artikel saat halaman dimuat
   useEffect(() => {

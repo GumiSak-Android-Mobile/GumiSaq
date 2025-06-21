@@ -76,7 +76,7 @@ export default function SignUpAdminScreen() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/sign-in')}>
+        <TouchableOpacity onPress={() => router.push('./sign-in')}>
           <Text style={styles.link}>Sudah punya akun? Login di sini</Text>
         </TouchableOpacity>
       </ScrollView>

@@ -1,11 +1,13 @@
 // app/(admin)/manage-articles/create.tsx
 
-import { publishNewArticle, uploadFile, getFilePreview, config } from '@/lib/appwrite';
+import { config, getFilePreview, publishNewArticle, uploadFile } from '@/lib/appwrite';
 import { useGlobalContext } from '@/lib/global-provider';
+import { CreateArticleData } from '@/types/article'; // Impor tipe data
 import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker'; // Pastikan Picker diimpor
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
 import {
   ActivityIndicator,
   Alert,
@@ -17,8 +19,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Pastikan Picker diimpor
-import { CreateArticleData } from '@/types/article'; // Impor tipe data
 
 
 type ArticleCategory = CreateArticleData['category'];
@@ -39,7 +39,7 @@ const CreateArticleScreen = () => {
     tags: '',
   });
 
-  const categories: ArticleCategory[] = ['nutrisi', 'diet', 'kesehatan', 'hipertensi', 'diabetes', 'kanker'];
+  const categories: ArticleCategory[] = ['Hiburan' , 'Benda' , 'Tradisi' , 'Adat' ];
 
   // Fungsi untuk membuka galeri gambar
   const pickImage = async () => {
@@ -170,7 +170,7 @@ const CreateArticleScreen = () => {
           {/* Tags */}
           <View>
             <Text className="text-base text-gray-600 mb-2">Tags (pisahkan dengan koma)</Text>
-            <TextInput value={form.tags} onChangeText={(e) => setForm({ ...form, tags: e })} placeholder="diet, sehat, olahraga" className="border border-gray-300 p-4 rounded-xl text-base" />
+            <TextInput value={form.tags} onChangeText={(e) => setForm({ ...form, tags: e })} placeholder="Hiburan,Budaya,Adat" className="border border-gray-300 p-4 rounded-xl text-base" />
           </View>
 
           {/* Tombol Publikasi */}

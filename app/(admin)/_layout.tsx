@@ -1,10 +1,12 @@
+// app/(admin)/_layout.tsx
+
 import { Tabs } from 'expo-router';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons'; // Menggunakan Ionicons untuk ikon
 
 // Komponen kustom untuk ikon tab
-const TabIcon = ({ iconName, color, focused, title }: { iconName: keyof typeof Ionicons.glyphMap; color: string; focused: boolean; title: string }) => {
+const TabIcon = ({ iconName, color, focused, title }: { iconName: keyof typeof Ionicons.glyphMap; color: string; focused: boolean; title:string }) => {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
       <Ionicons name={iconName} size={24} color={color} />
@@ -61,6 +63,7 @@ const AdminTabLayout = () => {
             ),
           }}
         />
+        {/* Tab untuk "manage-users" telah dihapus */}
       </Tabs>
     </GestureHandlerRootView>
   );
