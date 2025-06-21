@@ -135,7 +135,20 @@ export async function uploadFile(file: any, bucketId: string): Promise<Models.Fi
 }
 
 export function getFilePreview(bucketId: string, fileId: string): URL {
-  return storage.getFileView(bucketId, fileId);
+  // WORKAROUND: Karena storage.getFileView() mengembalikan undefined,
+  // kita akan membuat URL secara manual. Ini adalah metode yang lebih andal.
+  try {
+    if (!config.endpoint || !config.projectId) {
+      throw new Error(
+        "Konfigurasi endpoint atau projectId Appwrite tidak ditemukan."
+      );
+    }
+    const urlString = `${config.endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${config.projectId}`;
+    return new URL(urlString);
+  } catch (error) {
+    console.error("Gagal membuat URL preview file:", error);
+    throw new Error("Gagal membuat URL preview yang valid.");
+  }
 }
 
 async function deleteFileByUrl(fileUrl: string) {
@@ -185,24 +198,46 @@ export async function deleteArticle(articleId: string, image: string) {
 
 export async function updateArticle(articleId: string, updateData: Partial<CreateArticleData>) {
   try {
-    let finalImage = updateData.image;
+    const { imageFile, imageFile2, imageFile3, ...payload } = updateData;
+    const updatePayload: { [key: string]: any } = { ...payload };
 
-    if (updateData.imageFile) {
-      const oldArticle = await getArticleById(articleId);
-      const uploadedFile = await uploadFile(updateData.imageFile, config.storageBucketId!);
-      finalImage = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
+    // Ambil data artikel lama sekali saja jika ada gambar yang perlu diunggah
+    const oldArticle = (imageFile || imageFile2 || imageFile3) 
+      ? await getArticleById(articleId) 
+      : null;
+
+    // Proses unggah gambar utama
+    if (imageFile && oldArticle) {
+      const uploadedFile = await uploadFile(imageFile, config.storageBucketId!);
+      updatePayload.image = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
       if (oldArticle.image) {
         await deleteFileByUrl(oldArticle.image);
       }
     }
+
+    // Proses unggah gambar kedua
+    if (imageFile2 && oldArticle) {
+      const uploadedFile = await uploadFile(imageFile2, config.storageBucketId!);
+      updatePayload.image2 = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
+      if (oldArticle.image2) {
+        await deleteFileByUrl(oldArticle.image2);
+      }
+    }
     
-    const { imageFile, ...payload } = { ...updateData, image: finalImage };
+    // Proses unggah gambar ketiga
+    if (imageFile3 && oldArticle) {
+      const uploadedFile = await uploadFile(imageFile3, config.storageBucketId!);
+      updatePayload.image3 = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
+      if (oldArticle.image3) {
+        await deleteFileByUrl(oldArticle.image3);
+      }
+    }
 
     await databases.updateDocument(
       config.databaseId!,
       config.artikelCollectionId!,
       articleId,
-      payload
+      updatePayload
     );
   } catch (error) {
     console.error("Gagal memperbarui artikel:", error);
@@ -212,16 +247,22 @@ export async function updateArticle(articleId: string, updateData: Partial<Creat
 
 export async function publishNewArticle(articleData: CreateArticleData): Promise<Models.Document> {
   try {
+    // Memastikan semua field dari CreateArticleData disertakan
     const articlePayload = {
       title: articleData.title,
       description: articleData.description || "",
+      description2: articleData.description2 || "",
+      description3: articleData.description3 || "",
       content: articleData.content,
       category: articleData.category,
       author: articleData.author,
       tags: articleData.tags,
       isPublished: articleData.isPublished,
       image: articleData.image,
+      image2: articleData.image2 || null,
+      image3: articleData.image3 || null,
       viewCount: 0,
+      created: new Date().toISOString(), // Menambahkan tanggal pembuatan
     };
     
     const newArticle = await databases.createDocument(
