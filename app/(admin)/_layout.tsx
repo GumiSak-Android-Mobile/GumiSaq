@@ -1,5 +1,3 @@
-// app/(admin)/_layout.tsx
-
 import { Tabs } from 'expo-router';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -59,20 +57,6 @@ const AdminTabLayout = () => {
                 color={color}
                 focused={focused}
                 title="Artikel"
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="manage-users" // Merujuk ke app/(admin)/manage-users/
-          options={{
-            title: 'Pengguna',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                iconName={focused ? 'people' : 'people-outline'}
-                color={color}
-                focused={focused}
-                title="Pengguna"
               />
             ),
           }}
