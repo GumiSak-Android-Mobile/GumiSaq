@@ -1,3 +1,4 @@
+import { Article, CreateArticleData } from "@/types/article"; // Asumsi tipe ini ada
 import {
   Account,
   Avatars,
@@ -8,8 +9,6 @@ import {
   Query,
   Storage,
 } from "react-native-appwrite";
-import { Article, CreateArticleData } from "@/types/article"; // Asumsi tipe ini ada
-import { hashPassword } from "./hash-service"; // Ini tidak lagi dibutuhkan
 import { createArticleNotification } from "./notification-service"; // Asumsi file ini ada
 
 // --- Definisi Tipe ---
@@ -85,11 +84,23 @@ export async function registerAdmin(name: string, email: string, password: strin
  */
 export async function signInAdmin(email: string, password: string): Promise<Admin> {
   try {
-    // 1. Buat sesi login
+    // TAMBAHKAN BLOK INI: Coba hapus sesi yang mungkin sudah ada
+    try {
+      await account.deleteSession("current");
+    } catch (e) {
+      // Tidak apa-apa jika gagal, berarti memang tidak ada sesi aktif.
+      // Kita bisa mengabaikan error ini.
+      console.log("No active session found, proceeding to login.");
+    }
+    // AKHIR BLOK TAMBAHAN
+
+    // 1. Buat sesi login baru
     await account.createEmailPasswordSession(email, password);
+    
     // 2. Ambil data admin yang sudah login
     const adminData = await getCurrentAdmin();
     if (!adminData) throw new Error("Profil admin tidak ditemukan setelah login.");
+    
     return adminData;
   } catch (error) {
     console.error("Login admin error:", error);

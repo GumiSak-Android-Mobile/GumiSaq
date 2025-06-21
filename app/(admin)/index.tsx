@@ -30,8 +30,8 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      await refetch(); // Panggil refetch untuk membersihkan state global
-      // Setelah logout, root layout akan otomatis mengarahkan ke halaman sign-in
+      await refetch(); 
+      router.replace('/sign-in'); // Arahkan ke halaman login setelah logout
     } catch (error: any) {
       Alert.alert("Error Logout", error.message);
     }
@@ -41,7 +41,6 @@ const AdminDashboard = () => {
   const stats = {
     users: '120',
     articles: '25',
-    nutritionists: '15',
   };
 
   return (
@@ -76,16 +75,6 @@ const AdminDashboard = () => {
             title="Total Artikel"
             value={stats.articles}
             color="#10B981"
-          />
-        </View>
-
-        {/* Baris Kedua Kartu Statistik */}
-        <View className="flex-row justify-around mb-8">
-           <StatCard
-            iconName="fitness-outline"
-            title="Total Ahli Gizi"
-            value={stats.nutritionists}
-            color="#F97316"
           />
         </View>
 
