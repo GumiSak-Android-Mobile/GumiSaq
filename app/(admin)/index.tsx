@@ -79,16 +79,6 @@ const AdminDashboard = () => {
           />
         </View>
 
-        {/* Baris Kedua Kartu Statistik */}
-        <View className="flex-row justify-around mb-8">
-           <StatCard
-            iconName="fitness-outline"
-            title="Total Ahli Gizi"
-            value={stats.nutritionists}
-            color="#F97316"
-          />
-        </View>
-
         {/* Quick Actions */}
         <Text className="text-xl font-semibold text-gray-700 mb-4">Aksi Cepat</Text>
         <View className="space-y-3">
