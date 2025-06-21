@@ -98,12 +98,6 @@ const AdminDashboard = () => {
           >
             <Text className="text-white text-center font-bold text-base">Buat Artikel Baru</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            className="bg-green-500 p-4 rounded-xl shadow-lg shadow-green-500/30"
-            onPress={() => router.push('./manage-users')}
-          >
-            <Text className="text-white text-center font-bold text-base">Tambah Pengguna Baru</Text>
-          </TouchableOpacity>
         </View>
 
       </ScrollView>
