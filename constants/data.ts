@@ -1,4 +1,6 @@
+import icons from "./icons";
 import images from "./images";
+
 export const cards = [
   {
     title: "Baju ovi",
@@ -29,7 +31,7 @@ export const cards = [
     location: "narmada",
     price: "Rp.1000.000",
     rating: 5,
-    category: "baju",
+    category: "sofenir",
     image: images.baju,
   },
 ];
@@ -41,7 +43,7 @@ export const featuredCards = [
     price: "$100",
     rating: 4.8,
     image: images.baju,
-    category: "obat anak",
+    category: "sofenir",
   },
   {
     title: "Featured 2",
@@ -49,53 +51,40 @@ export const featuredCards = [
     price: "$200",
     rating: 3,
     image: images.baju,
-    category: "obat",
+    category: "sofenir",
   },
 ];
 
 export const categories = [
   { title: "All", category: "All" },
-  { title: "Propolist", category: "obat" },
-  { title: "skin care", category: "skin care" },
-  { title: "facial wash", category: "sabun" },
-  { title: "propolist anak", category: "obat anak" },
-  { title: "Others", category: "Others" },
+  { title: "Baju", category: "Baju" },
+  { title: "Celana", category: "Celana" },
+  { title: "Tote Bag", category: "Tas" },
+  { title: "Sofenir", category: "Sofenir" },
 ];
 
-// export const settings = [
-//   {
-//     title: "My Bookings",
-//     icon: icons.calendar,
-//   },
-//   {
-//     title: "Payments",
-//     icon: icons.wallet,
-//   },
-//   {
-//     title: "Profile",
-//     icon: icons.person,
-//   },
-//   {
-//     title: "Notifications",
-//     icon: icons.bell,
-//   },
-//   {
-//     title: "Security",
-//     icon: icons.shield,
-//   },
-//   {
-//     title: "Language",
-//     icon: icons.language,
-//   },
-//   {
-//     title: "Help Center",
-//     icon: icons.info,
-//   },
-//   {
-//     title: "Invite Friends",
-//     icon: icons.people,
-//   },
-// ];
+export const settings = [
+  {
+    title: "Dashboard",
+    icon: icons.dashboard,
+    route: "/dashboard",
+  },
+  {
+    title: "Profil",
+    icon: icons.user,
+    route: "/profile-detail",
+  },
+  {
+    title: "Keranjang",
+    icon: icons.cart,
+    route: "/keranjang",
+  },
+  {
+    title: "Alamat Pengiriman",
+    icon: icons.alamat,
+    route: "/address-manager",
+  },
+];
 
 // export const facilities = [
 //   {

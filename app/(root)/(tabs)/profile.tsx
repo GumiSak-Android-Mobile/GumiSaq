@@ -1,101 +1,206 @@
-import { Ionicons } from "@expo/vector-icons";
+import { settings } from '@/constants/data';
+import icons from '@/constants/icons';
+import { config, databases, logout, storage } from '@/lib/appwrite';
+import { useGlobalContext } from '@/lib/global-provider';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
+  Alert,
+  Image,
+  ImageSourcePropType,
+  SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const ProfileScreen = () => {
-  const [name, setName] = useState("Saufi Azuddin");
-  const [email, setEmail] = useState("sauficapekpkl99@gmail.com");
-  const [alamat, setAlamat] = useState("Jl. Mana Sudah");
-  const [noHp, setNoHp] = useState("081234567890");
-  const [password, setPassword] = useState("*******");
+interface SettingsItemProp {
+  icon: ImageSourcePropType;
+  title: string;
+  onPress?: () => void;
+  textStyle?: string;
+  showArrow?: boolean;
+}
+
+const ProfileDetailItem = ({ label, value }: { label: string; value: string | number | undefined }) => (
+  <View className="flex-row items-center py-2">
+    <Text className="text-lg font-rubik-bold w-32">{label}:</Text>
+    <Text className="text-lg font-rubik-regular">{value ?? 'Tidak ada'}</Text>
+  </View>
+);
+
+const SettingsItem = ({
+  icon,
+  title,
+  onPress,
+  textStyle,
+  showArrow = true,
+}: SettingsItemProp) => (
+  <TouchableOpacity
+    onPress={onPress}
+    className="flex flex-row items-center justify-between py-3"
+  >
+    <View className="flex flex-row items-center gap-3">
+      <Image source={icon} className="size-6" />
+      <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`}>
+        {title}
+      </Text>
+    </View>
+    {showArrow && <Image source={icons.rightArrow} className="size-5" />}
+  </TouchableOpacity>
+);
+
+const Profile = () => {
+  const { user, refetch } = useGlobalContext();
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const initialLinesToShow = 5;
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result) {
+      Alert.alert("Success", "Logged out successfully");
+      refetch();
+      router.push('/sign-in');
+    } else {
+      Alert.alert("Error", "Failed to logout");
+    }
+  };
+
+  const toggleText = () => {
+    setIsTextExpanded(!isTextExpanded);
+  };
+
+  const handleImagePick = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert("Permission Required", "You need to grant access to your photos to change profile picture.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+
+      if (!result.canceled) {
+        Alert.alert("Uploading...", "Please wait while we update your profile picture.");
+
+        const file = {
+          name: `avatar-${user?.$id}-${Date.now()}.jpg`,
+          type: 'image/jpeg',
+          uri: result.assets[0].uri,
+          size: await new Promise<number>((resolve) => {
+            fetch(result.assets[0].uri)
+              .then((response) => response.blob())
+              .then((blob) => resolve(blob.size))
+          })
+        };
+
+        const uploadedFile = await storage.createFile(
+          config.storageBucketId,
+          'unique()',
+          file
+        );
+
+        const fileUrl = storage.getFileView(config.storageBucketId, uploadedFile.$id);
+        console.log('Generated avatar URL:', fileUrl.href);
+
+        try {
+          console.log('Updating user profile:', user!.$id);
+          const updated = await databases.updateDocument(
+            config.databaseId!,
+            config.usersProfileCollectionId!,
+            user!.$id,
+            { avatar: fileUrl.href }
+          );
+          console.log('User profile updated:', updated);
+
+          console.log('Refreshing user data...');
+          await refetch();
+          console.log('User data refreshed');
+        } catch (updateError) {
+          console.error('Error updating profile:', updateError);
+          throw updateError;
+        }
+
+        Alert.alert("Success", "Profile picture updated successfully!");
+      }
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      Alert.alert("Error", "Failed to update profile picture. Please try again.");
+    }
+  };
 
   return (
-    <SafeAreaView className="bg-white h-full">
-      <ScrollView className="p-4">
-        {/* Header */}
-        <View className="flex-row items-center border-b border-black pb-2 mb-2">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text className="text-black text-xl font-bold ml-4">Profile</Text>
-          <TouchableOpacity onPress={() => router.back()} className="ml-auto">
-            <Text className="text-3xl text-black mr-4">×</Text>
-          </TouchableOpacity>
+    <SafeAreaView className="h-full bg-white">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="pb-32 px-7"
+      >
+        <View className="flex flex-row items-center justify-between mt-5">
+          <Text className="text-xl font-rubik-bold">Profile</Text>
+          <Image source={icons.bell} className="size-5" />
         </View>
 
-        {/* Profile Info */}
-        <View className="items-center mt-6">
-          <Ionicons name="person-circle-outline" size={80} color="#4B5563" />
-          <Text className="text-lg text-black font-bold mt-2">Name</Text>
-          <Text className="text-sm text-gray-900">youremail@mail.com</Text>
+        <View className="flex flex-col items-center mt-8">
+          <Image
+            source={{
+              uri: !user?.avatar
+                ? 'https://via.placeholder.com/150'
+                : user.avatar,
+            }}
+            className="size-36 rounded-full"
+          />
+          <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
         </View>
 
-        {/* Form */}
-        <View className="mt-8 space-y-4">
-          <View>
-            <Text className="text-black mb-1">Nama</Text>
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
-              value={name}
-              onChangeText={setName}
+        <View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
+          {user?.userType === 'agent' ? (
+            <SettingsItem 
+              icon={icons.dashboard} 
+              title="Dashboard Agen" 
+              onPress={() => router.push('/(root)/(agent)/dashboard')}
             />
-          </View>
+          ) : (
+            <SettingsItem 
+              icon={icons.dashboard} 
+              title="Daftar Sebagai Agen" 
+              onPress={() => router.push('/(root)/(agen-auth)/register')}
+            />
+          )}
 
-          <View>
-            <Text className="text-black mb-1 mt-4">Email</Text>
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
+          {settings.slice(1).map((item, index) => (
+            <SettingsItem
+              key={index}
+              icon={item.icon}
+              title={item.title}
+              onPress={() => {
+                if (item.route) {
+                  router.push(item.route as any); // or as unknown as RouteType if you know the type
+                }
+              }}
             />
-          </View>
-
-          <View>
-            <Text className="text-black mb-1 mt-4">Alamat</Text>
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
-              value={alamat}
-              onChangeText={setAlamat}
-            />
-          </View>
-
-          <View>
-            <Text className="text-black mb-1 mt-4">No HP</Text>
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
-              value={noHp}
-              onChangeText={setNoHp}
-              keyboardType="phone-pad"
-            />
-          </View>
-
-          <View>
-            <Text className="text-black mb-1 mt-4">Password</Text>
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
+          ))}
         </View>
 
-        {/* Button */}
-        <TouchableOpacity className="bg-green-500 mt-8 py-3 rounded-md items-center">
-          <Text className="text-black font-semibold">Save Change</Text>
-        </TouchableOpacity>
+        <View className="flex flex-col border-t mt-5 pt-5 border-primary-200">
+          <SettingsItem
+            icon={icons.logout}
+            title="Logout"
+            textStyle="text-danger"
+            showArrow={false}
+            onPress={handleLogout}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default ProfileScreen;
+export default Profile;
