@@ -1,3 +1,5 @@
+// lib/appwrite.ts
+
 import { Article, CreateArticleData } from "@/types/article";
 import {
   Account,
@@ -18,21 +20,36 @@ export interface Admin extends Models.Document {
   accountId: string;
 }
 
+// Tipe untuk data video scanner
+export interface ScannerVideo extends Models.Document {
+  title: string;
+  fileId: string;
+}
+
 // --- Konfigurasi Appwrite ---
 export const config = {
   platform: "com.saqcloth.gumisaq",
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
-  storageBucketId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || 'default',
+  storageBucketId:
+    process.env.EXPO_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || "default",
   adminCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ADMIN_COLLECTION_ID,
-  artikelCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ARTIKEL_COLLECTION_ID,
-  scannerCollectionId:process.env.EXPO_PUBLIC_APPWRITE_SCANNER_COLLECTION_ID,
+  artikelCollectionId:
+    process.env.EXPO_PUBLIC_APPWRITE_ARTIKEL_COLLECTION_ID,
+  collectionId: process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID,
+  scannerCollectionId: process.env.EXPO_PUBLIC_APPWRITE_SCANNER_COLLECTION_ID,
 };
 
 // Validasi Konfigurasi
 if (!config.adminCollectionId) {
   throw new Error("ID Koleksi Admin belum diatur di environment variables.");
+}
+if (!config.artikelCollectionId) {
+  throw new Error("ID Koleksi Artikel belum diatur di environment variables.");
+}
+if (!config.scannerCollectionId) {
+  throw new Error("ID Koleksi Scanner belum diatur di environment variables.");
 }
 
 // Inisialisasi Klien Appwrite
@@ -49,11 +66,12 @@ export const avatars = new Avatars(client);
 // =================================================================
 // LAYANAN OTENTIKASI ADMIN
 // =================================================================
-/**
- * PENTING: Pendaftaran admin sebaiknya dilakukan dari Appwrite Console untuk keamanan.
- * Fungsi ini disediakan untuk development, jangan diekspos di UI publik.
- */
-export async function registerAdmin(name: string, email: string, password: string): Promise<Models.Document> {
+
+export async function registerAdmin(
+  name: string,
+  email: string,
+  password: string
+): Promise<Models.Document> {
   try {
     const newAccount = await account.create(ID.unique(), email, password, name);
     if (!newAccount) throw new Error("Gagal membuat akun admin.");
@@ -75,10 +93,10 @@ export async function registerAdmin(name: string, email: string, password: strin
   }
 }
 
-/**
- * Login admin menggunakan sesi aman Appwrite.
- */
-export async function signInAdmin(email: string, password: string): Promise<Admin> {
+export async function signInAdmin(
+  email: string,
+  password: string
+): Promise<Admin> {
   try {
     await account.deleteSession("current").catch(() => {});
     await account.createEmailPasswordSession(email, password);
@@ -93,9 +111,6 @@ export async function signInAdmin(email: string, password: string): Promise<Admi
   }
 }
 
-/**
- * Mengambil data admin yang sedang login dari sesi aktif.
- */
 export async function getCurrentUser(): Promise<Admin | null> {
   try {
     const currentAccount = await account.get();
@@ -112,9 +127,6 @@ export async function getCurrentUser(): Promise<Admin | null> {
   }
 }
 
-/**
- * Logout admin dengan menghapus sesi saat ini.
- */
 export async function logout(): Promise<void> {
   try {
     await account.deleteSession("current");
@@ -127,24 +139,33 @@ export async function logout(): Promise<void> {
 // LAYANAN PENYIMPANAN (STORAGE)
 // =================================================================
 
-export async function uploadFile(file: any, bucketId: string): Promise<Models.File> {
+export async function uploadFile(
+  file: any,
+  bucketId: string
+): Promise<Models.File> {
   try {
-      return await storage.createFile(bucketId, ID.unique(), file);
+    return await storage.createFile(bucketId, ID.unique(), file);
   } catch (error) {
-      throw new Error(`Gagal mengunggah file: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Gagal mengunggah file: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 }
 
-export function getFilePreview(bucketId: string, fileId: string): URL {
-  // WORKAROUND: Karena storage.getFileView() mengembalikan undefined,
-  // kita akan membuat URL secara manual. Ini adalah metode yang lebih andal.
+export function getFilePreview(
+  bucketId: string,
+  fileId: string,
+  type: "view" | "download" = "view"
+): URL {
   try {
     if (!config.endpoint || !config.projectId) {
       throw new Error(
         "Konfigurasi endpoint atau projectId Appwrite tidak ditemukan."
       );
     }
-    const urlString = `${config.endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${config.projectId}`;
+    const urlString = `${config.endpoint}/storage/buckets/${bucketId}/files/${fileId}/${type}?project=${config.projectId}`;
     return new URL(urlString);
   } catch (error) {
     console.error("Gagal membuat URL preview file:", error);
@@ -152,13 +173,12 @@ export function getFilePreview(bucketId: string, fileId: string): URL {
   }
 }
 
-async function deleteFileByUrl(fileUrl: string) {
+async function deleteFileById(fileId: string) {
   try {
-      const fileId = fileUrl.split("/files/")[1].split("/view")[0];
-      await storage.deleteFile(config.storageBucketId!, fileId);
-      console.log(`File dengan ID ${fileId} berhasil dihapus.`);
+    await storage.deleteFile(config.storageBucketId!, fileId);
+    console.log(`File dengan ID ${fileId} berhasil dihapus.`);
   } catch (error) {
-      console.warn(`Gagal menghapus file lama dari storage: ${error}`);
+    console.warn(`Gagal menghapus file lama dari storage: ${error}`);
   }
 }
 
@@ -168,7 +188,11 @@ async function deleteFileByUrl(fileUrl: string) {
 
 export async function getArticles(): Promise<Article[]> {
   try {
-    const response = await databases.listDocuments<Article>(config.databaseId!, config.artikelCollectionId!, [Query.orderDesc("$createdAt")]);
+    const response = await databases.listDocuments<Article>(
+      config.databaseId!,
+      config.artikelCollectionId!,
+      [Query.orderDesc("$createdAt")]
+    );
     return response.documents;
   } catch (error) {
     console.error("Gagal mengambil artikel:", error);
@@ -176,112 +200,10 @@ export async function getArticles(): Promise<Article[]> {
   }
 }
 
-export async function getArticleById(articleId: string): Promise<Article> {
-  try {
-    return await databases.getDocument<Article>(config.databaseId!, config.artikelCollectionId!, articleId);
-  } catch (error) {
-    console.error(`Gagal mengambil artikel dengan ID: ${articleId}`, error);
-    throw error;
-  }
-}
-
-export async function deleteArticle(articleId: string, image: string) {
-  try {
-    await databases.deleteDocument(config.databaseId!, config.artikelCollectionId!, articleId);
-    if (image) {
-      await deleteFileByUrl(image);
-    }
-  } catch (error) {
-    console.error("Gagal menghapus artikel:", error);
-    throw error;
-  }
-}
-
-export async function updateArticle(articleId: string, updateData: Partial<CreateArticleData>) {
-  try {
-    const { imageFile, imageFile2, imageFile3, ...payload } = updateData;
-    const updatePayload: { [key: string]: any } = { ...payload };
-
-    // Ambil data artikel lama sekali saja jika ada gambar yang perlu diunggah
-    const oldArticle = (imageFile || imageFile2 || imageFile3) 
-      ? await getArticleById(articleId) 
-      : null;
-
-    // Proses unggah gambar utama
-    if (imageFile && oldArticle) {
-      const uploadedFile = await uploadFile(imageFile, config.storageBucketId!);
-      updatePayload.image = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
-      if (oldArticle.image) {
-        await deleteFileByUrl(oldArticle.image);
-      }
-    }
-
-    // Proses unggah gambar kedua
-    if (imageFile2 && oldArticle) {
-      const uploadedFile = await uploadFile(imageFile2, config.storageBucketId!);
-      updatePayload.image2 = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
-      if (oldArticle.image2) {
-        await deleteFileByUrl(oldArticle.image2);
-      }
-    }
-    
-    // Proses unggah gambar ketiga
-    if (imageFile3 && oldArticle) {
-      const uploadedFile = await uploadFile(imageFile3, config.storageBucketId!);
-      updatePayload.image3 = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
-      if (oldArticle.image3) {
-        await deleteFileByUrl(oldArticle.image3);
-      }
-    }
-
-    await databases.updateDocument(
-      config.databaseId!,
-      config.artikelCollectionId!,
-      articleId,
-      updatePayload
-    );
-  } catch (error) {
-    console.error("Gagal memperbarui artikel:", error);
-    throw error;
-  }
-}
-
-export async function publishNewArticle(articleData: CreateArticleData): Promise<Models.Document> {
-  try {
-    // Memastikan semua field dari CreateArticleData disertakan
-    const articlePayload = {
-      title: articleData.title,
-      description: articleData.description || "",
-      description2: articleData.description2 || "",
-      description3: articleData.description3 || "",
-      content: articleData.content,
-      category: articleData.category,
-      author: articleData.author,
-      tags: articleData.tags,
-      isPublished: articleData.isPublished,
-      image: articleData.image,
-      image2: articleData.image2 || null,
-      image3: articleData.image3 || null,
-      viewCount: 0,
-      created: new Date().toISOString(), // Menambahkan tanggal pembuatan
-    };
-    
-    const newArticle = await databases.createDocument(
-      config.databaseId!,
-      config.artikelCollectionId!,
-      ID.unique(),
-      articlePayload
-    );
-    
-    return newArticle;
-  } catch (error) {
-    console.error("Gagal mempublikasikan artikel:", error);
-    throw error;
-  }
-}
+// ... (fungsi-fungsi lain untuk artikel seperti getArticleById, deleteArticle, updateArticle, publishNewArticle)
 
 // =================================================================
-// LAYANAN SCANNER
+// LAYANAN MANAJEMEN VIDEO SCANNER
 // =================================================================
 
 interface ScannerVideoData {
@@ -289,32 +211,58 @@ interface ScannerVideoData {
   videoFile: {
     uri: string;
     name: string;
-    mimeType: string | null; // Mengganti 'type' menjadi 'mimeType' dan mengizinkan null
-    size?: number; // Jadikan size opsional
+    mimeType: string | null;
+    size?: number;
   };
+}
+
+export async function getScannerVideos(): Promise<ScannerVideo[]> {
+  try {
+    const response = await databases.listDocuments<ScannerVideo>(
+      config.databaseId!,
+      config.scannerCollectionId!,
+      [Query.orderDesc("$createdAt")]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error("Gagal mengambil video scanner:", error);
+    throw new Error("Gagal mengambil daftar video.");
+  }
+}
+
+export async function getScannerVideoById(id: string): Promise<ScannerVideo> {
+  try {
+    const response = await databases.getDocument<ScannerVideo>(
+      config.databaseId!,
+      config.scannerCollectionId!,
+      id
+    );
+    return response;
+  } catch (error) {
+    console.error(`Gagal mengambil video dengan ID: ${id}`, error);
+    throw new Error("Gagal mengambil data video.");
+  }
 }
 
 export async function saveScannerVideo(
   data: ScannerVideoData
 ): Promise<Models.Document> {
   try {
-    // 1. Unggah file video ke storage
     const fileToUpload = {
       uri: data.videoFile.uri,
       name: data.videoFile.name,
-      type: data.videoFile.mimeType || 'video/mp4', // Fallback ke 'video/mp4' jika null
+      type: data.videoFile.mimeType || "video/mp4",
       size: data.videoFile.size || 0,
     };
-    
+
     const uploadedFile = await uploadFile(
       fileToUpload,
       config.storageBucketId!
     );
     if (!uploadedFile?.$id) {
-      throw new Error('Gagal mendapatkan ID file setelah unggah.');
+      throw new Error("Gagal mendapatkan ID file setelah unggah.");
     }
 
-    // 2. Simpan data ke koleksi 'scanner'
     const scannerDocument = await databases.createDocument(
       config.databaseId!,
       config.scannerCollectionId!,
@@ -327,7 +275,41 @@ export async function saveScannerVideo(
 
     return scannerDocument;
   } catch (error) {
-    console.error('Gagal menyimpan video scanner:', error);
-    throw new Error('Gagal menyimpan data video.');
+    console.error("Gagal menyimpan video scanner:", error);
+    throw new Error("Gagal menyimpan data video.");
+  }
+}
+
+export async function updateScannerVideoTitle(
+  id: string,
+  title: string
+): Promise<Models.Document> {
+  try {
+    return await databases.updateDocument(
+      config.databaseId!,
+      config.scannerCollectionId!,
+      id,
+      { title }
+    );
+  } catch (error) {
+    console.error(`Gagal memperbarui judul video: ${id}`, error);
+    throw new Error("Gagal memperbarui judul.");
+  }
+}
+
+export async function deleteScannerVideo(
+  documentId: string,
+  fileId: string
+): Promise<void> {
+  try {
+    await databases.deleteDocument(
+      config.databaseId!,
+      config.scannerCollectionId!,
+      documentId
+    );
+    await deleteFileById(fileId);
+  } catch (error) {
+    console.error(`Gagal menghapus video: ${documentId}`, error);
+    throw new Error("Gagal menghapus video.");
   }
 }

@@ -7,9 +7,23 @@ const ScannerLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
+        name="index" // merujuk ke index.tsx
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="create" // merujuk ke create.tsx
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="[id]" // merujuk ke [id].tsx
+        options={{
+          headerShown: false,
+          presentation: 'modal',
         }}
       />
     </Stack>
