@@ -76,6 +76,16 @@ const TabsLayout = () => {
 						),
 					}}
 				/>
+					<Tabs.Screen
+								name="design"
+									options={{
+										title: "Edit",
+										headerShown: false,
+										tabBarIcon: ({ focused }) => (
+											<TabIcon icon={icons.edit} focused={focused} title={"Design"} />
+										),
+									}}
+								/>
 			<Tabs.Screen
 				name="profile"
 				options={{
@@ -86,7 +96,9 @@ const TabsLayout = () => {
 					),
 				}}
 			/>
+
 		</Tabs>
+		
 	);
 };
 

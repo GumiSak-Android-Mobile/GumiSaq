@@ -23,7 +23,6 @@ const EditProfile = () => {
   const [userType, setUserType] = useState(user?.userType ?? '');
   const [alamat, setAlamat] = useState(user?.alamat ?? '');
   const [noHp, setNoHp] = useState(user?.noHp ?? '');
-  const [accountId] = useState(user?.accountId ?? ''); // biasanya tidak diedit
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
@@ -43,7 +42,6 @@ const EditProfile = () => {
           userType,
           alamat,
           noHp,
-          accountId,
         }
       );
       await refetch();

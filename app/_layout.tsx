@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import "../global.css";
 
 export default function RootLayout() {
@@ -81,6 +82,7 @@ export default function RootLayout() {
   }
 
   return (
+    <GestureHandlerRootView style ={{ flex:1}}>
     <ErrorBoundary>
       <GlobalProvider>
           <Stack 
@@ -91,5 +93,6 @@ export default function RootLayout() {
           />
       </GlobalProvider>
     </ErrorBoundary>
+  </GestureHandlerRootView>
   );
 }
