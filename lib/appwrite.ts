@@ -27,7 +27,7 @@ export const config = {
   storageBucketId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || 'default',
   adminCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ADMIN_COLLECTION_ID,
   artikelCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ARTIKEL_COLLECTION_ID,
-  collectionId: process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID,
+  scannerCollectionId:process.env.EXPO_PUBLIC_APPWRITE_SCANNER_COLLECTION_ID,
 };
 
 // Validasi Konfigurasi
@@ -277,5 +277,57 @@ export async function publishNewArticle(articleData: CreateArticleData): Promise
   } catch (error) {
     console.error("Gagal mempublikasikan artikel:", error);
     throw error;
+  }
+}
+
+// =================================================================
+// LAYANAN SCANNER
+// =================================================================
+
+interface ScannerVideoData {
+  title: string;
+  videoFile: {
+    uri: string;
+    name: string;
+    mimeType: string | null; // Mengganti 'type' menjadi 'mimeType' dan mengizinkan null
+    size?: number; // Jadikan size opsional
+  };
+}
+
+export async function saveScannerVideo(
+  data: ScannerVideoData
+): Promise<Models.Document> {
+  try {
+    // 1. Unggah file video ke storage
+    const fileToUpload = {
+      uri: data.videoFile.uri,
+      name: data.videoFile.name,
+      type: data.videoFile.mimeType || 'video/mp4', // Fallback ke 'video/mp4' jika null
+      size: data.videoFile.size || 0,
+    };
+    
+    const uploadedFile = await uploadFile(
+      fileToUpload,
+      config.storageBucketId!
+    );
+    if (!uploadedFile?.$id) {
+      throw new Error('Gagal mendapatkan ID file setelah unggah.');
+    }
+
+    // 2. Simpan data ke koleksi 'scanner'
+    const scannerDocument = await databases.createDocument(
+      config.databaseId!,
+      config.scannerCollectionId!,
+      ID.unique(),
+      {
+        title: data.title,
+        fileId: uploadedFile.$id,
+      }
+    );
+
+    return scannerDocument;
+  } catch (error) {
+    console.error('Gagal menyimpan video scanner:', error);
+    throw new Error('Gagal menyimpan data video.');
   }
 }

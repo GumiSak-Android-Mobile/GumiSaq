@@ -3,14 +3,25 @@
 import { Tabs } from 'expo-router';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons'; // Menggunakan Ionicons untuk ikon
+import { Ionicons } from '@expo/vector-icons';
 
-// Komponen kustom untuk ikon tab
-const TabIcon = ({ iconName, color, focused, title }: { iconName: keyof typeof Ionicons.glyphMap; color: string; focused: boolean; title:string }) => {
+const TabIcon = ({
+  iconName,
+  color,
+  focused,
+  title,
+}: {
+  iconName: keyof typeof Ionicons.glyphMap;
+  color: string;
+  focused: boolean;
+  title: string;
+}) => {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
       <Ionicons name={iconName} size={24} color={color} />
-      <Text style={{ color: color, fontSize: 12, fontWeight: focused ? '600' : '400' }}>
+      <Text
+        style={{ color: color, fontSize: 12, fontWeight: focused ? '600' : '400' }}
+      >
         {title}
       </Text>
     </View>
@@ -22,10 +33,10 @@ const AdminTabLayout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
-          headerShown: false, // Header akan diatur di setiap halaman secara individual
+          headerShown: false,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: '#0BBEBB', // Warna ikon aktif
-          tabBarInactiveTintColor: '#666876', // Warna ikon tidak aktif
+          tabBarActiveTintColor: '#0BBEBB',
+          tabBarInactiveTintColor: '#666876',
           tabBarStyle: {
             backgroundColor: '#FFFFFF',
             borderTopWidth: 1,
@@ -36,7 +47,7 @@ const AdminTabLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="index" // Merujuk ke app/(admin)/index.tsx
+          name="index"
           options={{
             title: 'Dashboard',
             tabBarIcon: ({ color, focused }) => (
@@ -50,12 +61,14 @@ const AdminTabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="manage-articles" // Merujuk ke app/(admin)/manage-articles/
+          name="manage-articles"
           options={{
             title: 'Artikel',
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                iconName={focused ? 'document-text' : 'document-text-outline'}
+                iconName={
+                  focused ? 'document-text' : 'document-text-outline'
+                }
                 color={color}
                 focused={focused}
                 title="Artikel"
@@ -63,7 +76,21 @@ const AdminTabLayout = () => {
             ),
           }}
         />
-        {/* Tab untuk "manage-users" telah dihapus */}
+        {/* TAB BARU UNTUK SCANNER */}
+        <Tabs.Screen
+          name="manage-scanner"
+          options={{
+            title: 'Scanner',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                iconName={focused ? 'scan' : 'scan-outline'}
+                color={color}
+                focused={focused}
+                title="Scanner"
+              />
+            ),
+          }}
+        />
       </Tabs>
     </GestureHandlerRootView>
   );
