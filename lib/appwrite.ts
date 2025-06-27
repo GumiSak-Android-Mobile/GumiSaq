@@ -27,6 +27,7 @@ export const config = {
   storageBucketId: process.env.EXPO_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || 'default',
   adminCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ADMIN_COLLECTION_ID,
   artikelCollectionId: process.env.EXPO_PUBLIC_APPWRITE_ARTIKEL_COLLECTION_ID,
+  collectionId: process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID,
 };
 
 // Validasi Konfigurasi
