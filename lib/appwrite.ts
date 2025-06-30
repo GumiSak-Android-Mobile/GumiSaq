@@ -1,6 +1,6 @@
 // lib/appwrite.ts
 
-import { Article } from "@/types/article";
+import { Article, CreateArticleData } from "@/types/article";
 import {
   Account,
   Avatars,
@@ -208,7 +208,57 @@ export async function getArticles(): Promise<Article[]> {
 
 
 
-// ... (fungsi-fungsi lain untuk artikel seperti getArticleById, deleteArticle, updateArticle, publishNewArticle)
+export async function getArticleById(id: string): Promise<Article | null> {
+  try {
+    // Validasi sederhana untuk memastikan ID tidak kosong
+    if (!id) {
+      throw new Error("ID Artikel tidak boleh kosong.");
+    }
+
+    const article = await databases.getDocument<Article>(
+      config.databaseId!,
+      config.artikelCollectionId!,
+      id
+    );
+    
+    return article;
+  } catch (error: any) {
+    console.error(`Error saat mengambil artikel dengan ID (${id}):`, error);
+    // Kita melempar ulang error agar bisa ditangkap oleh useAppwrite
+    throw new Error(`Gagal mengambil data artikel: ${error.message}`);
+  }
+}
+
+export async function updateArticle(id: string, data: Partial<CreateArticleData>) {
+    try {
+        // Logika untuk mengunggah file gambar baru jika ada
+        if (data.imageFile) {
+            const uploadedFile = await uploadFile(data.imageFile, config.storageBucketId!);
+            data.image = getFilePreview(config.storageBucketId!, uploadedFile.$id).href;
+            delete data.imageFile;
+        }
+        if (data.imageFile2) {
+            const uploadedFile2 = await uploadFile(data.imageFile2, config.storageBucketId!);
+            data.image2 = getFilePreview(config.storageBucketId!, uploadedFile2.$id).href;
+            delete data.imageFile2;
+        }
+        if (data.imageFile3) {
+            const uploadedFile3 = await uploadFile(data.imageFile3, config.storageBucketId!);
+            data.image3 = getFilePreview(config.storageBucketId!, uploadedFile3.$id).href;
+            delete data.imageFile3;
+        }
+
+        return await databases.updateDocument(
+            config.databaseId!,
+            config.artikelCollectionId!,
+            id,
+            data
+        );
+    } catch (error: any) {
+        console.error("Gagal memperbarui artikel:", error);
+        throw new Error(error.message);
+    }
+}
 
 // =================================================================
 // LAYANAN MANAJEMEN VIDEO SCANNER
