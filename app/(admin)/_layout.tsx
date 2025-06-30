@@ -76,7 +76,7 @@ const AdminTabLayout = () => {
             ),
           }}
         />
-        {/* TAB BARU UNTUK SCANNER */}
++
         <Tabs.Screen
           name="manage-scanner"
           options={{
@@ -88,6 +88,9 @@ const AdminTabLayout = () => {
                 focused={focused}
                 title="Scanner"
               />
+              
+
+              
             ),
           }}
         />

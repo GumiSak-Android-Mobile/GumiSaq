@@ -1,6 +1,6 @@
 // lib/appwrite.ts
 
-import { Article, CreateArticleData } from "@/types/article";
+import { Article } from "@/types/article";
 import {
   Account,
   Avatars,
@@ -39,6 +39,12 @@ export const config = {
     process.env.EXPO_PUBLIC_APPWRITE_ARTIKEL_COLLECTION_ID,
   collectionId: process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID,
   scannerCollectionId: process.env.EXPO_PUBLIC_APPWRITE_SCANNER_COLLECTION_ID,
+
+
+  shirtColorsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_COLORS_COLLECTION_ID,
+  designStickersCollectionId: process.env.EXPO_PUBLIC_APPWRITE_STICKERS_COLLECTION_ID,
+  designFontsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_FONTS_COLLECTION_ID,
+
 };
 
 // Validasi Konfigurasi
@@ -200,6 +206,8 @@ export async function getArticles(): Promise<Article[]> {
   }
 }
 
+
+
 // ... (fungsi-fungsi lain untuk artikel seperti getArticleById, deleteArticle, updateArticle, publishNewArticle)
 
 // =================================================================
@@ -311,5 +319,162 @@ export async function deleteScannerVideo(
   } catch (error) {
     console.error(`Gagal menghapus video: ${documentId}`, error);
     throw new Error("Gagal menghapus video.");
+  }
+}
+
+
+export interface DesignSticker extends Models.Document {
+  name: string;
+  imageFileId: string; // Asumsi ini menyimpan URL langsung atau ID file
+  order: number;
+}
+
+export interface ShirtColor extends Models.Document {
+  name: string;
+  hexCode: string;
+  order: number;
+}
+
+export interface DesignFont extends Models.Document {
+  name: string;
+  fontFileUrl: string; // Asumsi ini menyimpan URL ke file font
+  order: number;
+}
+
+// =================================================================
+// LAYANAN MANAJEMEN ASET DESAIN
+// =================================================================
+
+// --- FUNGSI WARNA ---
+export async function getShirtColors(): Promise<ShirtColor[]> {
+  try {
+    const response = await databases.listDocuments<ShirtColor>(
+      config.databaseId!,
+      config.shirtColorsCollectionId!,
+      [Query.orderAsc("order")]
+    );
+    return response.documents;
+  } catch (error) {
+    throw new Error("Gagal mengambil data warna.");
+  }
+}
+
+export async function createShirtColor(data: { name: string; hexCode: string; }): Promise<Models.Document> {
+    return databases.createDocument(
+      config.databaseId!,
+      config.shirtColorsCollectionId!,
+      ID.unique(),
+      data
+    );
+}
+
+export async function deleteShirtColor(documentId: string): Promise<void> {
+    await databases.deleteDocument(config.databaseId!, config.shirtColorsCollectionId!, documentId);
+}
+
+
+// --- FUNGSI STIKER ---
+export async function getDesignStickers(): Promise<DesignSticker[]> {
+  try {
+    const response = await databases.listDocuments<DesignSticker>(
+      config.databaseId!,
+      config.designStickersCollectionId!,
+      [Query.orderAsc("order")]
+    );
+    return response.documents;
+  } catch (error) {
+    throw new Error("Gagal mengambil data stiker.");
+  }
+}
+
+export async function createDesignSticker(file: any): Promise<Models.Document> {
+  // 1. Upload file stiker ke storage
+  const uploadedFile = await uploadFile(file, config.storageBucketId!);
+  if (!uploadedFile?.$id) {
+    throw new Error("Gagal unggah file stiker.");
+  }
+
+  // 2. Dapatkan URL preview file
+  const fileUrl = getFilePreview(config.storageBucketId!, uploadedFile.$id, "view");
+
+  // 3. Simpan URL ke database
+  return databases.createDocument(
+    config.databaseId!,
+    config.designStickersCollectionId!,
+    ID.unique(),
+    {
+      name: file.name, // atau nama lain yang diinginkan
+      imageFileId: fileUrl.href, // Simpan URL lengkap
+    }
+  );
+}
+
+export async function deleteDesignSticker(documentId: string, fileUrl: string): Promise<void> {
+  try {
+    // Ekstrak fileId dari URL
+    const urlParts = fileUrl.split('/');
+    const fileId = urlParts[urlParts.length - 2];
+    
+    // Hapus dokumen dan file di storage
+    await databases.deleteDocument(config.databaseId!, config.designStickersCollectionId!, documentId);
+    await storage.deleteFile(config.storageBucketId!, fileId);
+  } catch (error) {
+      console.error("Gagal menghapus stiker:", error);
+      throw error;
+  }
+}
+
+
+// --- FUNGSI FONT ---
+export async function getDesignFonts(): Promise<DesignFont[]> {
+  try {
+    const response = await databases.listDocuments<DesignFont>(
+      config.databaseId!,
+      config.designFontsCollectionId!,
+      [Query.orderAsc("order")]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error("Gagal mengambil data font:", error);
+    throw new Error("Gagal mengambil data font.");
+  }
+}
+
+
+export async function createDesignFont(file: any): Promise<Models.Document> {
+  // 1. Upload file font ke storage
+  const uploadedFile = await uploadFile(file, config.storageBucketId!);
+  if (!uploadedFile?.$id) {
+    throw new Error("Gagal unggah file font.");
+  }
+
+  // 2. Dapatkan URL preview file
+  const fileUrl = getFilePreview(config.storageBucketId!, uploadedFile.$id, "view");
+
+  // 3. Simpan URL ke database
+  return databases.createDocument(
+    config.databaseId!,
+    config.designFontsCollectionId!,
+    ID.unique(),
+    {
+      name: file.name.replace(/\.[^/.]+$/, ""), // Hapus ekstensi file dari nama
+      fontFileUrl: fileUrl.href,
+    }
+  );
+}
+
+export async function deleteDesignFont(documentId: string, fileUrl: string): Promise<void> {
+  try {
+    // Ekstrak fileId dari URL untuk dihapus dari storage
+    const urlParts = fileUrl.split('/');
+    const fileId = urlParts[urlParts.length - 2];
+
+    // Hapus dokumen dari database
+    await databases.deleteDocument(config.databaseId!, config.designFontsCollectionId!, documentId);
+    // Hapus file dari storage
+    await storage.deleteFile(config.storageBucketId!, fileId);
+  } catch (error) {
+      console.error("Gagal menghapus font:", error);
+      throw error;
   }
 }
