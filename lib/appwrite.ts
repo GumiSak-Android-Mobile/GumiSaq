@@ -260,6 +260,54 @@ export async function updateArticle(id: string, data: Partial<CreateArticleData>
     }
 }
 
+export async function publishNewArticle(
+  data: CreateArticleData
+): Promise<Models.Document> {
+  try {
+    return await databases.createDocument(
+      config.databaseId!,
+      config.artikelCollectionId!,
+      ID.unique(),
+      data
+    );
+  } catch (error) {
+    console.error("Gagal mempublikasikan artikel baru:", error);
+    throw new Error("Gagal mempublikasikan artikel.");
+  }
+}
+
+export async function deleteArticle(
+  documentId: string,
+  imageUrl: string
+): Promise<void> {
+  try {
+    // 1. Hapus dokumen artikel dari database
+    await databases.deleteDocument(
+      config.databaseId!,
+      config.artikelCollectionId!,
+      documentId
+    );
+
+    // 2. Ekstrak fileId dari URL gambar dan hapus dari storage
+    if (imageUrl) {
+      try {
+        const urlParts = imageUrl.split("/");
+        const fileId = urlParts[urlParts.length - 2];
+        if (fileId) {
+          await storage.deleteFile(config.storageBucketId!, fileId);
+        }
+      } catch (e) {
+        // Abaikan jika file tidak ada atau URL tidak valid
+        console.warn(`Gagal menghapus file gambar lama dari storage: ${e}`);
+      }
+    }
+  } catch (error) {
+    console.error(`Gagal menghapus artikel: ${documentId}`, error);
+    throw new Error("Gagal menghapus artikel.");
+  }
+}
+
+
 // =================================================================
 // LAYANAN MANAJEMEN VIDEO SCANNER
 // =================================================================
