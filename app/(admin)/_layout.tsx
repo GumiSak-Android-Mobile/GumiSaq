@@ -1,32 +1,6 @@
-// app/(admin)/_layout.tsx
-
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-const TabIcon = ({
-  iconName,
-  color,
-  focused,
-  title,
-}: {
-  iconName: keyof typeof Ionicons.glyphMap;
-  color: string;
-  focused: boolean;
-  title: string;
-}) => {
-  return (
-    <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-      <Ionicons name={iconName} size={24} color={color} />
-      <Text
-        style={{ color: color, fontSize: 12, fontWeight: focused ? '600' : '400' }}
-      >
-        {title}
-      </Text>
-    </View>
-  );
-};
 
 const AdminTabLayout = () => {
   return (
@@ -34,15 +8,11 @@ const AdminTabLayout = () => {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarShowLabel: false,
           tabBarActiveTintColor: '#0BBEBB',
           tabBarInactiveTintColor: '#666876',
+          tabBarShowLabel: true,
           tabBarStyle: {
             backgroundColor: '#FFFFFF',
-            borderTopWidth: 1,
-            borderTopColor: '#E5E7EB',
-            height: 84,
-            paddingBottom: 10,
           },
         }}
       >
@@ -50,12 +20,11 @@ const AdminTabLayout = () => {
           name="index"
           options={{
             title: 'Dashboard',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                iconName={focused ? 'grid' : 'grid-outline'}
+            tabBarIcon: ({ color, focused, size }) => (
+              <Ionicons 
+                name={focused ? 'grid' : 'grid-outline'} 
+                size={size}
                 color={color}
-                focused={focused}
-                title="Dashboard"
               />
             ),
           }}
@@ -64,48 +33,41 @@ const AdminTabLayout = () => {
           name="manage-articles"
           options={{
             title: 'Artikel',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                iconName={
-                  focused ? 'document-text' : 'document-text-outline'
-                }
+            tabBarIcon: ({ color, focused, size }) => (
+              <Ionicons 
+                name={focused ? 'document-text' : 'document-text-outline'}
+                size={size}
                 color={color}
-                focused={focused}
-                title="Artikel"
               />
             ),
           }}
         />
-
         <Tabs.Screen
           name="manage-scanner"
           options={{
             title: 'Scanner',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                iconName={focused ? 'scan' : 'scan-outline'}
+            tabBarIcon: ({ color, focused, size }) => (
+              <Ionicons
+                name={focused ? 'scan' : 'scan-outline'}
+                size={size}
                 color={color}
-                focused={focused}
-                title="Scanner"
               />
             ),
           }}
         />
-
-        <Tabs.Screen
-          name="manage-designs"
-          options={{
-            title: 'Desain',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                iconName={focused ? 'color-palette' : 'color-palette-outline'}
-                color={color}
-                focused={focused}
-                title="Desain"
-              />
-            ),
-          }}
-        />
+      <Tabs.Screen
+        name="manage-designs" // Sekarang ini akan merujuk ke grup yang sudah punya layout sendiri
+        options={{
+          title: 'Desain', // Ganti judul agar lebih deskriptif
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'color-palette' : 'color-palette-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
       </Tabs>
     </GestureHandlerRootView>
   );
