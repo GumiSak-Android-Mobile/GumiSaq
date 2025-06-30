@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GumisaQ",
-    "slug": "GumisaQ",
+    "name": "GumisaQAdmin",
+    "slug": "GumisaQAdmin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logoawal.png",
@@ -42,7 +42,7 @@
     "extra": {
       "router": {},
       "eas": {
-
+        "projectId": "13c16993-85f1-464e-b09f-476772f93f26"
       }
     }
   }

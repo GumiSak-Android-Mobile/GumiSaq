@@ -30,8 +30,8 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      await refetch(); // Panggil refetch untuk membersihkan state global
-      // Setelah logout, root layout akan otomatis mengarahkan ke halaman sign-in
+      await refetch();
+      router.replace('/sign-in');
     } catch (error: any) {
       Alert.alert("Error Logout", error.message);
     }
@@ -55,6 +55,7 @@ const AdminDashboard = () => {
         <TouchableOpacity 
           onPress={handleLogout} 
           className="p-2 bg-red-100 rounded-full"
+          
         >
           <Ionicons name="log-out-outline" size={28} color="#EF4444" />
         </TouchableOpacity>
