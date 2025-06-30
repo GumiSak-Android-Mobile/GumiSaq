@@ -4,7 +4,7 @@
     "slug": "GumisaQ",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logoawal.jpg",
+    "icon": "./assets/images/logoawal.png",
     "scheme": "gumisaq",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,22 +13,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logoawal.jpg",
+        "foregroundImage": "./assets/images/logoawal.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.muhammaddzaki.GumisaQ"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logoawal.jpg"
+      "favicon": "./assets/images/logoawal.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logoawal.jpg",
+          "image": "./assets/images/logoawal.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+
+      }
     }
   }
 }
