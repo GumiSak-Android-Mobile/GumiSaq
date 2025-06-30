@@ -1,9 +1,9 @@
 // app/(admin)/_layout.tsx
 
-import { Tabs } from 'expo-router';
-import { Image, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+import { Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const TabIcon = ({
   iconName,
@@ -76,7 +76,7 @@ const AdminTabLayout = () => {
             ),
           }}
         />
-+
+
         <Tabs.Screen
           name="manage-scanner"
           options={{
@@ -88,9 +88,21 @@ const AdminTabLayout = () => {
                 focused={focused}
                 title="Scanner"
               />
-              
+            ),
+          }}
+        />
 
-              
+        <Tabs.Screen
+          name="manage-designs"
+          options={{
+            title: 'Desain',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                iconName={focused ? 'color-palette' : 'color-palette-outline'}
+                color={color}
+                focused={focused}
+                title="Desain"
+              />
             ),
           }}
         />
