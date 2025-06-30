@@ -1,11 +1,11 @@
 import {
-  Account,
-  Avatars,
-  Client,
-  Databases,
-  ID,
-  Query,
-  Storage,
+    Account,
+    Avatars,
+    Client,
+    Databases,
+    ID,
+    Query,
+    Storage,
 } from "react-native-appwrite";
 
 // =================================================================
@@ -373,6 +373,41 @@ export async function createOrder(
     }
 }
 
+/**
+ * Mengambil detail order berdasarkan orderId.
+ */
+export async function getOrderById(orderId: string) {
+  try {
+    const order = await databases.getDocument(
+      config.databaseId!,
+      config.ordersCollectionId!,
+      orderId
+    );
+    return order;
+  } catch (error) {
+    console.error("Gagal mengambil detail pesanan:", error);
+    throw new Error("Gagal mengambil detail pesanan.");
+  }
+}
+
+/**
+ * Konfirmasi pembayaran order (update status menjadi 'paid').
+ */
+export async function confirmOrderPayment(orderId: string) {
+  try {
+    await databases.updateDocument(
+      config.databaseId!,
+      config.ordersCollectionId!,
+      orderId,
+      { status: "paid" }
+    );
+    return true;
+  } catch (error) {
+    console.error("Gagal konfirmasi pembayaran:", error);
+    throw new Error("Gagal konfirmasi pembayaran.");
+  }
+}
+
 // =================================================================
 // FUNGSI AGEN
 // =================================================================
@@ -412,4 +447,6 @@ export async function registerAsAgent(userId: string, agentData: { storeName: st
     }
     throw new Error(error.message || "Gagal mendaftar sebagai agen.");
   }
+
+  
 }

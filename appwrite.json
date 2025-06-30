@@ -1,0 +1,1097 @@
+{
+    "projectId": "683d7c58000b12d9fe82",
+    "endpoint": "https://fra.cloud.appwrite.io/v1",
+    "projectName": "GumisaQ",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": 0,
+                "sessionsLimit": 10,
+                "passwordHistory": 0,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "functions": [
+        {
+            "$id": "68615ddf003cd7506443",
+            "execute": [
+                "any"
+            ],
+            "name": "midtrans-snap-token",
+            "enabled": true,
+            "logging": true,
+            "runtime": "node-22",
+            "scopes": [
+                "users.read"
+            ],
+            "events": [],
+            "schedule": "",
+            "timeout": 15,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "specification": "s-0.5vcpu-512mb",
+            "path": "functions/midtrans-snap-token"
+        },
+        {
+            "$id": "686193a6000f9b01851f",
+            "name": "Midtrans",
+            "runtime": "node-18.0",
+            "specification": "s-0.5vcpu-512mb",
+            "execute": [
+                "any"
+            ],
+            "events": [],
+            "scopes": [
+                "users.read"
+            ],
+            "schedule": "",
+            "timeout": 15,
+            "enabled": true,
+            "logging": true,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "path": "functions/Midtrans"
+        }
+    ],
+    "databases": [
+        {
+            "$id": "683d7c7e002c6a9901a4",
+            "name": "gumisaq",
+            "enabled": true
+        }
+    ],
+    "collections": [
+        {
+            "$id": "683d7d73001da92c6791",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "user",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "email",
+                    "default": null
+                },
+                {
+                    "key": "password",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "avatar",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "userType",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "user",
+                        "agent"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "alamat",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null
+                },
+                {
+                    "key": "noHp",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 16,
+                    "default": null
+                },
+                {
+                    "key": "accountId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 500,
+                    "default": null
+                },
+                {
+                    "key": "phoneNumber",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "addresses",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "wishlist",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 1000,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "68403ddc003044ff10f3",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "artikel",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null
+                },
+                {
+                    "key": "image",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null
+                },
+                {
+                    "key": "category",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "Hiburan",
+                        "Benda",
+                        "Tradisi",
+                        "Adat"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "author",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "tags",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 50,
+                    "default": null
+                },
+                {
+                    "key": "isPublished",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "viewCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "image2",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "image3",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "description2",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null
+                },
+                {
+                    "key": "description3",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null
+                },
+                {
+                    "key": "created",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "684fcd780033ce86e682",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "scanner",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "fileId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "68519125002019e364d4",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "admin",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "email",
+                    "default": null
+                },
+                {
+                    "key": "password",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "userType",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "admin"
+                    ],
+                    "format": "enum",
+                    "default": "admin"
+                },
+                {
+                    "key": "avatar",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "accountId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6852c8600022058f4a69",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "agenst",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "email",
+                    "default": null
+                },
+                {
+                    "key": "avatar",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "password",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "phone",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "owner",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "userType",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6852c915000ac2768cd2",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "galleries",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "image",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6852c9d4002f5b53f9bd",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "reviews",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 500,
+                    "default": null
+                },
+                {
+                    "key": "avatar",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "review",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null
+                },
+                {
+                    "key": "rating",
+                    "type": "double",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 5,
+                    "default": null
+                },
+                {
+                    "key": "stok",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "6852cac7003a4e2ee048",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "reviews",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6852cac7003a4e2ee048",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "stok",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "Baju",
+                        "Celana",
+                        "Tas",
+                        "Sofenir",
+                        "Other"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null
+                },
+                {
+                    "key": "address",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2000,
+                    "default": null
+                },
+                {
+                    "key": "price",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "rating",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "min": -1.7976931348623157e+308,
+                    "max": 5,
+                    "default": null
+                },
+                {
+                    "key": "image",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "agentId",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "6852c8600022058f4a69",
+                    "relationType": "manyToOne",
+                    "twoWay": false,
+                    "twoWayKey": "6852cd56003a0cff1d65",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                },
+                {
+                    "key": "gallery",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "6852c915000ac2768cd2",
+                    "relationType": "oneToMany",
+                    "twoWay": false,
+                    "twoWayKey": "6852cd8c0033037193cc",
+                    "onDelete": "cascade",
+                    "side": "parent"
+                },
+                {
+                    "key": "reviews",
+                    "type": "relationship",
+                    "required": false,
+                    "array": false,
+                    "relatedCollection": "6852c9d4002f5b53f9bd",
+                    "relationType": "manyToOne",
+                    "twoWay": true,
+                    "twoWayKey": "stok",
+                    "onDelete": "cascade",
+                    "side": "child"
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "active",
+                        "inactive"
+                    ],
+                    "format": "enum",
+                    "default": "active"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6854ee71003d465ec93f",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "keranjang",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "productId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "quantity",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 1,
+                    "max": 1000,
+                    "default": 1
+                },
+                {
+                    "key": "isCustom",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "customProductName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "customProductImage",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "customProductPrice",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1.7976931348623157e+308,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6854f77a002277267ee3",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "orders",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "totalAmount",
+                    "type": "double",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 1.7976931348623157e+308,
+                    "default": null
+                },
+                {
+                    "key": "shippingAddress",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 500,
+                    "default": null
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "pending",
+                        "shipped",
+                        "delivered"
+                    ],
+                    "format": "enum",
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6854f8160019edd39365",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "order_items",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "orderId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "productId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "quantity",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": null
+                },
+                {
+                    "key": "priceAtPurchase",
+                    "type": "double",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 1.7976931348623157e+308,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6861247c002912f39231",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "sticker",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "imageFileId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "order",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 10000,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "68612484003a0be9a232",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "color",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "hexCode",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "order",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 10000,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "686155d4002b8209d9dc",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "design_fonts",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "fontFamily",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "order",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 10000,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "68616d2f002cb7063304",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "683d7c7e002c6a9901a4",
+            "name": "finished_designs",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 225,
+                    "default": null
+                },
+                {
+                    "key": "imageUrl",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "format": "url",
+                    "default": null
+                },
+                {
+                    "key": "designData",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": null
+                },
+                {
+                    "key": "shirtColor",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                }
+            ],
+            "indexes": []
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "avatars",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "fileSecurity": true,
+            "name": "Image",
+            "enabled": true,
+            "maximumFileSize": 50000000,
+            "allowedFileExtensions": [
+                "jpg",
+                "png",
+                "svg",
+                "html",
+                "jpng",
+                "mp4",
+                "gif",
+                "webp",
+                "jpeg"
+            ],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
+    ]
+}

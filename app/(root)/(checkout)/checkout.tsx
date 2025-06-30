@@ -1,25 +1,24 @@
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-  Image,
-} from "react-native";
-import React, { useState, useEffect, useMemo } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useFocusEffect } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { useGlobalContext } from "@/lib/global-provider";
-import { useAppwrite } from "@/lib/useAppwrite";
-import {
   createOrder,
   getCartItems,
   getPropertyById,
   getUserAddresses,
 } from "@/lib/appwrite";
+import { useGlobalContext } from "@/lib/global-provider";
+import { useAppwrite } from "@/lib/useAppwrite";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useFocusEffect } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const CheckoutScreen = () => {
   const { user } = useGlobalContext();
@@ -108,7 +107,7 @@ const CheckoutScreen = () => {
     setIsPlacingOrder(true);
     try {
       const orderId = await createOrder(user.$id, selectedAddress, grandTotal, mergedData);
-      router.replace({ pathname: "/order-confirmation", params: { orderId } });
+      router.replace({ pathname: "/payment", params: { orderId } });
     } catch (error: any) {
       Alert.alert("Gagal Membuat Pesanan", error.message);
     } finally {
